@@ -1,0 +1,6 @@
+@ReactSignalR.Server_HostAddress = http://localhost:5095
+
+GET {{ReactSignalR.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,32 @@
+.vs
+*.suo
+*.user
+.DS_Store
+
+# React Client
+reactsignalr.client/logs
+reactsignalr.client/*.log
+reactsignalr.client/npm-debug.log*
+reactsignalr.client/yarn-debug.log*
+reactsignalr.client/yarn-error.log*
+reactsignalr.client/pnpm-debug.log*
+reactsignalr.client/lerna-debug.log*
+reactsignalr.client/node_modules
+reactsignalr.client/dist
+reactsignalr.client/dist-ssr
+reactsignalr.client/*.local
+reactsignalr.client/.vscode/*
+reactsignalr.client/!.vscode/extensions.json
+reactsignalr.client/.idea
+reactsignalr.client/*.ntvs*
+reactsignalr.client/*.njsproj
+reactsignalr.client/*.sw?
+
+# .NET Server
+ReactSignalR.Server/bin/
+ReactSignalR.Server/obj/
+ReactSignalR.Server/*.user
+ReactSignalR.Server/Properties/PublishProfiles/
+ReactSignalR.Server/App_Data/
+ReactSignalR.Server/*.publishsettings
+ReactSignalR.Server/wwwroot/dist/

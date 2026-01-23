@@ -1,0 +1,10 @@
+# Tüm C# dosyaları için geçerli olsun
+[*.cs]
+
+# Açılış parantezini yeni satıra koyma (aynı satırda kalsın)
+csharp_new_line_before_open_brace = none
+
+# Else, catch ve finally bloklarını da bir önceki parantezin yanına çekmek isterseniz:
+csharp_new_line_before_else = false
+csharp_new_line_before_catch = false
+csharp_new_line_before_finally = false
