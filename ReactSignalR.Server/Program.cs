@@ -5,12 +5,21 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddSignalR(options =>
-{
+
+
+
+
+// Eren, mesaj boyutunu 20 MB yap
+builder.Services.AddSignalR(options => {
     options.MaximumReceiveMessageSize = 20 * 1024 * 1024;
 });
-builder.Services.AddCors(options =>
-{
+
+
+
+
+
+
+builder.Services.AddCors(options => {
     options.AddPolicy("cors", policy =>
         policy.AllowAnyHeader()
               .AllowAnyMethod()
@@ -23,7 +32,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
- 
+
 var app = builder.Build();
 
 
@@ -31,8 +40,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+if (app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -43,9 +51,14 @@ app.UseAuthorization();
 
 app.UseCors("cors");
 app.MapControllers();
-app.MapHub<ImageHub>("/imageHub");
-app.MapHub<PosHub>("/posHub");
+
+
+
+// Eren, SignalR Hub rotası
 app.MapHub<MerchantHub>("/merchantHub");
+
+
+
 app.MapFallbackToFile("/index.html");
 
 app.Run("http://0.0.0.0:5000");

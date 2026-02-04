@@ -8,7 +8,7 @@ public class CommandAction {
 }
 
 public class DeviceInfo {
-    public string ConnectionId { get; set; }
+    public string ConnectionId { get; set; } // SignalR ConnectionId
     public string FullName { get; set; } // given_name + family_name
     public string DeviceType { get; set; } // JWT'den veya QueryString'den gelen cihaz adı
     public List<CommandAction> AvailableCommands { get; set; } = new List<CommandAction>();
@@ -19,7 +19,9 @@ namespace ReactSignalR.Server {
     public class MerchantHub : Hub {
         private static readonly Dictionary<string, List<DeviceInfo>> _merchantConnections = new();
 
+        // Eren, bağlantı kurulduğunda cihaz bilgilerini al
         public override async Task OnConnectedAsync() {
+            // Eren, normalde JWT Token doğrulaması yapılmalı ama bende key olmadığından gelen token'ı doğrulamadan decode edip okuyorum.
             var httpContext = Context.GetHttpContext();
             var selectedMerchantId = httpContext.Request.Query["merchantId"].ToString();
             string authHeader = httpContext.Request.Headers["Authorization"].ToString();
@@ -63,6 +65,8 @@ namespace ReactSignalR.Server {
                 AvailableCommands = availableCommands
             };
             Console.WriteLine($"Bağlanan Cihaz: {newDevice.FullName} - Tür: {newDevice.DeviceType} - ConnId: {newDevice.ConnectionId}");
+
+            //Eren, cihazı merchantId'ye göre kaydet
             lock (_merchantConnections) {
                 if (!_merchantConnections.ContainsKey(selectedMerchantId))
                     _merchantConnections[selectedMerchantId] = new List<DeviceInfo>();
@@ -75,6 +79,7 @@ namespace ReactSignalR.Server {
             await base.OnConnectedAsync();
         }
 
+        // Eren, bağlantı koptuğunda cihazı listeden çıkar
         public override async Task OnDisconnectedAsync(Exception? exception) {
             var merchantId = Context.GetHttpContext().Request.Query["merchantId"].ToString();
 
@@ -94,12 +99,14 @@ namespace ReactSignalR.Server {
             await base.OnDisconnectedAsync(exception);
         }
 
+        // Eren, belirli bir merchantId'ye bağlı cihazlara güncellenmiş cihaz listesini gönder
         private async Task SendDeviceList(string merchantId) {
             if (_merchantConnections.TryGetValue(merchantId, out var devices)) {
                 await Clients.Group(merchantId).SendAsync("UpdateDeviceList", devices);
             }
         }
 
+        // Eren, belirli bir cihaza komut gönder
         public async Task SendCommandToDevice(string targetConnectionId, string command, string data) {
             Console.WriteLine($"Komut gönderiliyor - Hedef: {targetConnectionId}, Komut: {command}, Veri: {data}");
             await Clients.Client(targetConnectionId).SendAsync("ReceiveCommand", command, data);
@@ -107,39 +114,5 @@ namespace ReactSignalR.Server {
     }
 
 
-    public static class UserHandler {
-        public static HashSet<string> ConnectedIds = new HashSet<string>();
-    }
-    public class ImageHub : Hub {
-        public override Task OnConnectedAsync() {
-            UserHandler.ConnectedIds.Add(Context.ConnectionId);
-            Console.WriteLine($"ImageHub Yeni bağlantı: {Context.ConnectionId} - Toplam bağlantılar: {UserHandler.ConnectedIds.Count}");
-            return base.OnConnectedAsync();
-        }
 
-        public override Task OnDisconnectedAsync(Exception? exception) {
-            UserHandler.ConnectedIds.Remove(Context.ConnectionId);
-            Console.WriteLine($"ImageHub Bağlantı kesildi: {Context.ConnectionId} - Kalan bağlantılar: {UserHandler.ConnectedIds.Count}");
-            return base.OnDisconnectedAsync(exception);
-        }
-    }
-    public class PosHub : Hub {
-        public override Task OnConnectedAsync() {
-            UserHandler.ConnectedIds.Add(Context.ConnectionId);
-            Console.WriteLine($"PosHub Yeni bağlantı: {Context.ConnectionId} - Toplam bağlantılar: {UserHandler.ConnectedIds.Count}");
-            return base.OnConnectedAsync();
-        }
-
-        public override Task OnDisconnectedAsync(Exception? exception) {
-            UserHandler.ConnectedIds.Remove(Context.ConnectionId);
-            Console.WriteLine($"PosHub Bağlantı kesildi: {Context.ConnectionId} - Kalan bağlantılar: {UserHandler.ConnectedIds.Count}");
-            return base.OnDisconnectedAsync(exception);
-        }
-
-        public async Task SendCommand(string command, string data) {
-            Console.WriteLine($"Komut alındı: {command} - Veri: {data}");
-            await Clients.All.SendAsync("PosCommand", command, data);
-
-        }
-    }
 }
