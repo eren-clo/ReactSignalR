@@ -67,6 +67,12 @@ export default defineConfig({
         secure: false,
         ws: true,
       },
+      "/travellerHub": {
+        target: "http://192.168.1.38:5000",
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
       "/posHub": {
         target: "http://192.168.1.38:5000",
         changeOrigin: true,

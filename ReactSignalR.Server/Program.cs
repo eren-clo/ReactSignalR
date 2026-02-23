@@ -12,6 +12,9 @@ builder.Services.AddControllers();
 // Eren, mesaj boyutunu 20 MB yap
 builder.Services.AddSignalR(options => {
     options.MaximumReceiveMessageSize = 20 * 1024 * 1024;
+    options.EnableDetailedErrors = true; // Detaylı hata mesajları
+}).AddHubOptions<ReactSignalR.Server.TravellerHub>(options => {
+    options.EnableDetailedErrors = true;
 });
 
 
@@ -54,8 +57,9 @@ app.MapControllers();
 
 
 
-// Eren, SignalR Hub rotası
+// Eren, SignalR Hub rotaları
 app.MapHub<MerchantHub>("/merchantHub");
+app.MapHub<TravellerHub>("/travellerHub");
 
 
 

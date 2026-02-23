@@ -9,3 +9,9 @@ export interface Device {
   connectionId: string;
   availableCommands: CommandAction[];
 }
+
+export interface TravellerInfo {
+  connectionId: string;
+  connectionKey: string;
+  nfcResult: string;
+}
